@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'CountDownTimeAgoLabel'
-  s.version          = '0.1.3'
+  s.version          = '0.1.4'
   s.summary          = 'CountDown logic via custom label. You can use use own view implementation via CountDown class usage'
 
   s.description      = <<-DESC
@@ -16,7 +16,7 @@ Supports multiple styles for formatting with ability to set custom formatter. Su
   s.source           = { :git => 'https://github.com/pionl/CountDownTimeAgoLabel.git', :tag => s.version.to_s }
   s.social_media_url = 'https://twitter.com/pionl'
 
-  s.ios.deployment_target = '8.0'
+  s.ios.deployment_target = '9.0'
 
   s.source_files = 'CountDownLabel/Classes/**/*'
 
