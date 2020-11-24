@@ -27,7 +27,7 @@ class CountDownFullStyle: CountDownStyleProtocol {
      
      - returns:
      */
-    func canFormatComponent(compontent: CountDownFormatComponent, value: Int) -> Bool {
+    func canFormatComponent(component compontent: CountDownFormatComponent, value: Int) -> Bool {
         return value != 0
     }
     
@@ -41,10 +41,10 @@ class CountDownFullStyle: CountDownStyleProtocol {
      */
     func format(component: CountDownFormatComponent, value: Int) -> String {
         // get the key
-        let key = localizedKeyFor(component)
+        let key = localizedKeyFor(component: component)
         
         // must include the stringdict
-        let format = CountDownBundle.localizedString(key)
+        let format = CountDownBundle.localizedString(key: key)
         
         // format the localized string with given value
         return String.localizedStringWithFormat(format, value)

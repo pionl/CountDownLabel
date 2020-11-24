@@ -13,8 +13,8 @@ import Foundation
  
  - NotSet:
  */
-public enum CountDownError: ErrorType {
-    case PropertyNotSet(message: String)
+public enum CountDownError: Error {
+    case propertyNotSet(message: String)
 }
 
 /**
@@ -55,7 +55,7 @@ public class CountDown {
     }
     
     /// Desired time interval to trigger the timer
-    public var timeInterval: NSTimeInterval = 1.0
+    public var timeInterval: TimeInterval = 1.0
     
     /// Autostart when the date is set
     public var autoStartOnDate: Bool = true
@@ -73,7 +73,7 @@ public class CountDown {
     private(set) public var hasFinished: Bool = false
     
     /// The finished message on countdown logic
-    public var finishedMessage: String = CountDownBundle.localizedString("countdown_finished")
+    public var finishedMessage: String = CountDownBundle.localizedString(key: "countdown_finished")
     
     // MARK: INIT
     
@@ -108,7 +108,11 @@ public class CountDown {
             // enable automatic timer for the countdown
             if logic != .Static {
             // start sheduler
-                timer = NSTimer.scheduledTimerWithTimeInterval(timeInterval, target: self, selector: #selector(CountDown.onTimer(_:)), userInfo: nil, repeats: true)
+                timer = Timer.scheduledTimer(
+                    timeInterval: timeInterval,
+                    target: self,
+                    selector: #selector(CountDown.onTimer(_timer:)),
+                    userInfo: nil, repeats: true)
             }
             
             // update the starting value
@@ -129,14 +133,14 @@ public class CountDown {
     // MARK: Timer
     
     /// The timer used to update the countdown
-    private var timer: NSTimer?
+    private var timer: Timer?
     
     /**
      Triggered via timer
      
      - parameter _timer:
      */
-    @objc private func onTimer(_timer: NSTimer) {
+    @objc private func onTimer(_timer: Timer) {
         if isFullyPrepared() {
             updateCountDown()
         }
@@ -151,9 +155,9 @@ public class CountDown {
      */
     public func currentFormat() -> String {
         // prepare dates for components
-        let now = NSDate()
-        var fromDate: NSDate?;
-        var toDate: NSDate?;
+        let now = Date()
+        var fromDate: Date?
+        var toDate: Date?
         
         // check which way to count the diff of dates
         let dateInPast = now.timeIntervalSinceNow <= date!.timeIntervalSinceNow
@@ -161,7 +165,7 @@ public class CountDown {
         // add support to future and past coundtown
         if dateInPast {
             fromDate = now
-            toDate = date!
+            toDate = date as! Date
         } else {
             
             // if we have countdown and the current date is not in the current state
@@ -169,7 +173,7 @@ public class CountDown {
             if (logic == .CountDown) {
                 // stop the timer and update the delegate
                 stop()
-                delegate?.countDownFinished(self)
+                delegate?.countDownFinished(countDown: self)
                 
                 // the countdown has finished
                 hasFinished = true
@@ -179,15 +183,19 @@ public class CountDown {
             }
             
             // turn the dates to enable up increase of the date
-            fromDate = date!
+            fromDate = date as! Date
             toDate = now
         }
         
         // get the date components
-        let dateComponents = NSCalendar.currentCalendar().components(formatter.dateComponents(), fromDate:fromDate!, toDate: toDate!, options: [])
+        let dateComponents = Calendar.current.dateComponents(
+            formatter.dateComponents(),
+            from: fromDate!,
+            to: toDate!
+        )
         
         // build the format
-        return formatter.format(dateComponents)
+        return formatter.format(components: dateComponents)
     }
     
     /**
@@ -204,7 +212,7 @@ public class CountDown {
         let formatedString = currentFormat()
         
         // tell the delegate that we have new format
-        delegate?.countDownChanged(self, format: formatedString)
+        delegate?.countDownChanged(countDown: self, format: formatedString)
     }
     
     // MARK: Helpers
@@ -216,12 +224,12 @@ public class CountDown {
      */
     private func isFullyPrepared() -> Bool {
         do {
-            try testRequiredProperty(delegate, description: "delegate to update your UI")
-            try testRequiredProperty(date, description: "starting date")
-            try testRequiredProperty(formatter, description: "formatter you want to use")
+            try testRequiredProperty(value: delegate, description: "delegate to update your UI")
+            try testRequiredProperty(value: date, description: "starting date")
+            try testRequiredProperty(value: formatter, description: "formatter you want to use")
             
             return true
-        } catch CountDownError.PropertyNotSet(let message) {
+        } catch CountDownError.propertyNotSet(let message) {
             debugPrint("CountDown: \(message)")
         } catch {
             debugPrint("CountDown: raised unknown error")
@@ -240,7 +248,7 @@ public class CountDown {
      */
     private func testRequiredProperty(value: Any?, description: String) throws {
         guard value != nil else {
-            throw CountDownError.PropertyNotSet(message: "You must set a \(description)")
+            throw CountDownError.propertyNotSet(message: "You must set a \(description)")
         }
     }
 }

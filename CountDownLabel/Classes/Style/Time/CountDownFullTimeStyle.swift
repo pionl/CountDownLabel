@@ -17,7 +17,7 @@ class CountDownFullTimeStyle: CountDownFullStyle {
      - parameter formatter:
      */
     override func setup(formatter: CountDownBaseFormatter) {
-        super.setup(formatter)
+        super.setup(formatter: formatter)
         
         // ensure the correct time separator
         formatter.timeSeparator = " "
@@ -32,6 +32,6 @@ class CountDownFullTimeStyle: CountDownFullStyle {
      - returns:
      */
     override func canFormatComponent(component: CountDownFormatComponent, value: Int) -> Bool {
-        return component == .Second || super.canFormatComponent(component, value: value)
+        return component == .second || super.canFormatComponent(component: component, value: value)
     }
 }

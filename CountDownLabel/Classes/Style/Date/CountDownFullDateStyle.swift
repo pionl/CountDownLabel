@@ -17,7 +17,7 @@ class CountDownFullDateStyle: CountDownFullStyle {
      - parameter formatter:
      */
     override func setup(formatter: CountDownBaseFormatter) {
-        super.setup(formatter)
+        super.setup(formatter: formatter)
         
         // ensure the correct time separator
         formatter.dateSeparator = " "
