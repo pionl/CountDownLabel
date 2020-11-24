@@ -15,19 +15,19 @@ class CountDownBundle: NSObject {
     static let shared = CountDownBundle()
     
     /// Holds the current bundle for the resources
-    var resourcesBundle: NSBundle?
+    var resourcesBundle: Bundle?
     
     override init() {
         super.init()
         
         // must load the frameowkr bundle
-        let frameworkBundle = NSBundle(forClass: self.classForCoder)
+        let frameworkBundle = Bundle(for: self.classForCoder)
         
         // we must get the bundle with resources
-        let path = frameworkBundle.pathForResource("CountDownLabel", ofType: "bundle")
+        let path = frameworkBundle.path(forResource: "CountDownLabel", ofType: "bundle")
         
         // we must load the bundle
-        resourcesBundle = NSBundle(path: path!)!
+        resourcesBundle = Bundle(path: path!)!
     }
     
     /**
@@ -35,7 +35,7 @@ class CountDownBundle: NSObject {
      
      - returns:
      */
-    static func resourceBundle() -> NSBundle {
+    static func resourceBundle() -> Bundle {
         return shared.resourcesBundle!
     }
     

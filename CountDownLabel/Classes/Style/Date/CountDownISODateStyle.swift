@@ -48,7 +48,7 @@ class CountDownISODateStyle: CountDownStyleProtocol {
         var format: String
         
         // format the correct digits (expect the year)
-        if (component == .Year) {
+        if (component == .year) {
             format = "%d"
         } else {
             format = "%02d"

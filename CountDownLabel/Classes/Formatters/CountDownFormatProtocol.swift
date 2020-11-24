@@ -17,12 +17,13 @@ public protocol CountDownFormatProtocol: class {
      
      - returns:
      */
-    func format(components: NSDateComponents) -> String
+    func format(components: DateComponents) -> String
     
     /**
      Returns the desired date components
      
      - returns:
      */
-    func dateComponents() -> NSCalendarUnit
+    func dateComponents() -> Set<Calendar.Component>
+    
 }

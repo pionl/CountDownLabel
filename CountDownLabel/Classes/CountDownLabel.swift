@@ -9,7 +9,7 @@
 import Foundation
 
 /// The finish block
-public typealias CountDownFinishBlock = (countDown: CountDown) -> Void
+public typealias CountDownFinishBlock = (_ countDown: CountDown) -> Void
 
 @IBDesignable
 /// Desibganle count down label
@@ -23,7 +23,7 @@ public class CountDownLabel: UILabel, CountDownProtocol {
     @IBInspectable var logic: String? {
         didSet {
             if logic != nil {
-                countDown?.logic = CountDownLogic(rawValue: logic!.lowercaseString)!
+                countDown?.logic = CountDownLogic(rawValue: logic!.lowercased())!
             }
         }
     }
@@ -32,7 +32,7 @@ public class CountDownLabel: UILabel, CountDownProtocol {
     @IBInspectable var timeStyle: String? {
         didSet {
             if timeStyle != nil {
-                let enumValue = CountDownFormatStyle(rawValue: timeStyle!.lowercaseString)!
+                let enumValue = CountDownFormatStyle(rawValue: timeStyle!.lowercased())!
                 
                 if let formatter = countDown?.formatter as? CountDownBaseFormatter {
                     formatter.timeStyle = enumValue
@@ -45,7 +45,7 @@ public class CountDownLabel: UILabel, CountDownProtocol {
     @IBInspectable var dateStyle: String? {
         didSet {
             if dateStyle != nil {
-                let enumValue = CountDownFormatStyle(rawValue: dateStyle!.lowercaseString)!
+                let enumValue = CountDownFormatStyle(rawValue: dateStyle!.lowercased())!
                 
                 if let formatter = countDown?.formatter as? CountDownBaseFormatter {
                     formatter.dateStyle = enumValue
@@ -55,11 +55,9 @@ public class CountDownLabel: UILabel, CountDownProtocol {
     }
     
     /// Set the autostart
-    @IBInspectable var autoStartOnDate: Bool? {
+    @IBInspectable var autoStartOnDate: Bool = false {
         didSet {
-            if autoStartOnDate != nil {
-                countDown?.autoStartOnDate = autoStartOnDate!
-            }
+            countDown?.autoStartOnDate = autoStartOnDate
         }
     }
     
@@ -143,11 +141,11 @@ public class CountDownLabel: UILabel, CountDownProtocol {
     public func countDownChanged(countDown: CountDown, format: String) {
         var finalText = ""
         
-        appendTextIfCan(&finalText, countDown: countDown, canShowOnFinished: showPrefixOnFinish, text: prefixText)
+        appendTextIfCan(target: &finalText, countDown: countDown, canShowOnFinished: showPrefixOnFinish, text: prefixText)
         
         finalText += format
         
-        appendTextIfCan(&finalText, countDown: countDown, canShowOnFinished: showSuffixOnFinish, text: suffixText)
+        appendTextIfCan(target: &finalText, countDown: countDown, canShowOnFinished: showSuffixOnFinish, text: suffixText)
         
         text = finalText
     }
@@ -159,7 +157,7 @@ public class CountDownLabel: UILabel, CountDownProtocol {
      - parameter countDown:
      - parameter text:
      */
-    private func appendTextIfCan(inout target: String, countDown: CountDown, canShowOnFinished: Bool, text: String?) {
+    private func appendTextIfCan( target: inout String, countDown: CountDown, canShowOnFinished: Bool, text: String?) {
         // add only if text is provided and if the countdown is not in finish state (if the
         // not set differently)
         if text != nil && (!countDown.hasFinished || canShowOnFinished) {
@@ -174,7 +172,7 @@ public class CountDownLabel: UILabel, CountDownProtocol {
      */
     public func countDownFinished(countDown: CountDown) {
         if onFinishBlock != nil {
-            onFinishBlock!(countDown: countDown)
+            onFinishBlock!(countDown)
         }
     }
     

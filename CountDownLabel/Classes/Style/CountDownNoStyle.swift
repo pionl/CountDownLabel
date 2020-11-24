@@ -27,7 +27,7 @@ class CountDownNoStyle: CountDownStyleProtocol {
      
      - returns:
      */
-    func canFormatComponent(compontent: CountDownFormatComponent, value: Int) -> Bool {
+    func canFormatComponent(component: CountDownFormatComponent, value: Int) -> Bool {
         return false
     }
     

@@ -23,7 +23,7 @@ class CountDownISOTimeStyle: CountDownStyleProtocol {
         
         // if we have a full style, we will add a 'and' separator
         if formatter.dateStyle == .Full {
-            formatter.dateTimeSeparator = CountDownBundle.localizedString("date_time_separator_full_to_iso")
+            formatter.dateTimeSeparator = CountDownBundle.localizedString(key: "date_time_separator_full_to_iso")
         }
     }
     

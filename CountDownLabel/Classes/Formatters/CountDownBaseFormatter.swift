@@ -19,12 +19,12 @@ import Foundation
  - Second: 
  */
 public enum CountDownFormatComponent: String {
-    case Year = "countdown_year"
-    case Month = "countdown_month"
-    case Day = "countdown_day"
-    case Hour = "countdown_hour"
-    case Minute = "countdown_minute"
-    case Second = "countdown_second"
+    case year = "countdown_year"
+    case month = "countdown_month"
+    case day = "countdown_day"
+    case hour = "countdown_hour"
+    case minute = "countdown_minute"
+    case second = "countdown_second"
 }
 
 /**
@@ -46,7 +46,7 @@ public enum CountDownFormatStyle: String {
 
 /// Enables the base formating via the value and the key. Ideal for subclassing
 
-public class CountDownBaseFormatter : NSObject, CountDownFormatProtocol {
+public class CountDownBaseFormatter : NSObject, CountDownFormatProtocol {    
     
     /// Separator used to join the date and time together. Default is space
     public var dateTimeSeparator = " "
@@ -60,7 +60,7 @@ public class CountDownBaseFormatter : NSObject, CountDownFormatProtocol {
     public var timeStyleObject: CountDownStyleProtocol? {
         didSet {
             // setup the style
-            timeStyleObject!.setup(self)
+            timeStyleObject!.setup(formatter: self)
         }
     }
     
@@ -84,7 +84,7 @@ public class CountDownBaseFormatter : NSObject, CountDownFormatProtocol {
                 break
                 
             default:
-                timeStyleObject = createSharedStyleObject(timeStyle)
+                timeStyleObject = createSharedStyleObject(style: timeStyle)
                 break
             }
         }
@@ -102,7 +102,7 @@ public class CountDownBaseFormatter : NSObject, CountDownFormatProtocol {
     public var dateStyleObject: CountDownStyleProtocol? {
         didSet {
             // setup the style
-            dateStyleObject!.setup(self)
+            dateStyleObject!.setup(formatter: self)
         }
     }
     
@@ -126,7 +126,7 @@ public class CountDownBaseFormatter : NSObject, CountDownFormatProtocol {
                 break
                 
             default:
-                dateStyleObject = createSharedStyleObject(dateStyle)
+                dateStyleObject = createSharedStyleObject(style: dateStyle)
                 break
             }
         }
@@ -158,14 +158,14 @@ public class CountDownBaseFormatter : NSObject, CountDownFormatProtocol {
      
      - returns:
      */
-    public func format(components: NSDateComponents) -> String {
+    public func format(components: DateComponents) -> String {
         var values = [String]()
         
         // tries to append the date components
-        values.append(formatDate(components))
-        values.append(formatTime(components))
+        values.append(formatDate(components: components))
+        values.append(formatTime(components: components))
         
-        return values.joinWithSeparator(dateTimeSeparator)
+        return values.joined(separator: dateTimeSeparator)
     }
     
     
@@ -175,14 +175,14 @@ public class CountDownBaseFormatter : NSObject, CountDownFormatProtocol {
      
      - returns:
      */
-    public func dateComponents() -> NSCalendarUnit {
+    public func dateComponents() -> Set<Calendar.Component> {
         return [
-            NSCalendarUnit.Year,
-            NSCalendarUnit.Month,
-            NSCalendarUnit.Day,
-            NSCalendarUnit.Hour,
-            NSCalendarUnit.Minute,
-            NSCalendarUnit.Second,
+        .year,
+        .month,
+        .day,
+        .hour,
+        .minute,
+        .second
         ]
     }
     
@@ -195,15 +195,15 @@ public class CountDownBaseFormatter : NSObject, CountDownFormatProtocol {
      
      - returns: 
      */
-    func formatDate(components: NSDateComponents) -> String {
+    func formatDate(components: DateComponents) -> String {
         var values = [String]()
         
         // tries to append the date components
-        appendComponentTo(&values, component: .Year, value: components.year)
-            .appendComponentTo(&values, component: .Month, value: components.month)
-            .appendComponentTo(&values, component: .Day, value: components.day)
+        appendComponentTo(values: &values, component: .year, value: components.year!)
+            .appendComponentTo(values: &values, component: .month, value: components.month!)
+            .appendComponentTo(values: &values, component: .day, value: components.day!)
         
-        return values.joinWithSeparator(dateSeparator)
+        return values.joined(separator: dateSeparator)
     }
     
     /**
@@ -213,14 +213,14 @@ public class CountDownBaseFormatter : NSObject, CountDownFormatProtocol {
      
      - returns:
      */
-    func formatTime(components: NSDateComponents) -> String {
+    func formatTime(components: DateComponents) -> String {
         var values = [String]()
         
-        appendComponentTo(&values, component: .Hour, value: components.hour)
-            .appendComponentTo(&values, component: .Minute, value: components.minute)
-            .appendComponentTo(&values, component: .Second, value: components.second)
+        appendComponentTo(values: &values, component: .hour, value: components.hour!)
+            .appendComponentTo(values: &values, component: .minute, value: components.minute!)
+            .appendComponentTo(values: &values, component: .second, value: components.second!)
         
-        return values.joinWithSeparator(timeSeparator)
+        return values.joined(separator: timeSeparator)
     }
     
     /**
@@ -233,8 +233,8 @@ public class CountDownBaseFormatter : NSObject, CountDownFormatProtocol {
      */
     func formatComponent(component: CountDownFormatComponent, value: Int) -> String? {
         
-        if canFormatComponent(component, value: value) {
-            return formatComponentsValue(component, value: value)
+        if canFormatComponent(component: component, value: value) {
+            return formatComponentsValue(component: component, value: value)
         }
         
         return nil
@@ -249,7 +249,7 @@ public class CountDownBaseFormatter : NSObject, CountDownFormatProtocol {
      - returns:
      */
     func formatComponentsValue(component: CountDownFormatComponent, value: Int) -> String {
-        return styleFor(component).format(component, value: value)
+        return styleFor(component: component).format(component: component, value: value)
     }
     
     /**
@@ -261,7 +261,7 @@ public class CountDownBaseFormatter : NSObject, CountDownFormatProtocol {
      - returns:
      */
     func canFormatComponent(component: CountDownFormatComponent, value: Int) -> Bool {
-        return styleFor(component).canFormatComponent(component, value: value)
+        return styleFor(component: component).canFormatComponent(component: component, value: value)
     }
     
     /**
@@ -273,8 +273,8 @@ public class CountDownBaseFormatter : NSObject, CountDownFormatProtocol {
      
      - returns:
      */
-    func appendComponentTo(inout values: [String], component: CountDownFormatComponent, value: Int) -> Self {
-        if let string = formatComponent(component, value: value) {
+    func appendComponentTo( values: inout [String], component: CountDownFormatComponent, value: Int) -> Self {
+        if let string = formatComponent(component: component, value: value) {
             values.append(string)
         }
         return self
@@ -289,7 +289,7 @@ public class CountDownBaseFormatter : NSObject, CountDownFormatProtocol {
      */
     private func styleFor(component: CountDownFormatComponent) -> CountDownStyleProtocol {
         switch component {
-        case .Minute, .Hour, .Second:
+        case .minute, .hour, .second:
             return timeStyleObject!
         default:
             return dateStyleObject!;

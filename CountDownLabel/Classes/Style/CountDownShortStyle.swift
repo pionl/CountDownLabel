@@ -20,6 +20,6 @@ class CountDownShortStyle: CountDownFullStyle {
      - returns: 
      */
     override func localizedKeyFor(component: CountDownFormatComponent) -> String {
-        return super.localizedKeyFor(component) + "_short"
+        return super.localizedKeyFor(component: component) + "_short"
     }
 }
